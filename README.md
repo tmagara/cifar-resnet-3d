@@ -4,7 +4,7 @@
 CIFAR-10 91% with 0.36M(360,065) parameters in 25 epochs.
 
 # Run
-        python3 train.py -g 0 -b 512 -e 25 -l 0.01 -w 0.001
+        python3 train.py -g 0 -b 256 -e 25 -l 0.005 -w 0.0005
 
 # TODO
 - Describe the concept.
