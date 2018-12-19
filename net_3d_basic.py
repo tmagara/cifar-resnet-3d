@@ -10,9 +10,9 @@ class ResidualBlock3D(chainer.Chain):
         w = chainer.initializers.HeUniform()
         with self.init_scope():
             self.normalize0 = chainer.links.BatchNormalization(channels)
-            self.conv1 = chainer.links.Convolution3D(channels, mid_channels, kernel, 1, pad, True, w)
+            self.conv1 = chainer.links.Convolution3D(channels, mid_channels, kernel, stride, pad, True, w)
             self.normalize1 = chainer.links.BatchNormalization(mid_channels)
-            self.conv2 = chainer.links.Convolution3D(mid_channels, out_channels, kernel, stride, pad, True, w)
+            self.conv2 = chainer.links.Convolution3D(mid_channels, out_channels, kernel, 1, pad, True, w)
             self.normalize2 = chainer.links.BatchNormalization(out_channels)
             if do_pool or channels != out_channels:
                 self.shortcut = chainer.links.Convolution3D(channels, out_channels, 1, stride, 0, True, w)
