@@ -48,7 +48,7 @@ def create_blocks(n, in_channels, out_channels, do_pool, z_kernel):
     return sequential
 
 
-def z2c(x, size):
+def c2z(x, size):
     N, C, Z, H, W = x.shape
     x = chainer.functions.reshape(x, (N, C // size, size, Z, H, W))
     x = chainer.functions.transpose(x, (0, 1, 3, 2, 4, 5))
@@ -65,9 +65,10 @@ class ResNet(chainer.Chain):
             self.input = chainer.links.Convolution2D(None, channels, 3, 1, 1, True, w)
             self.normalize = chainer.links.BatchNormalization(channels)
 
-            self.layer1 = create_blocks(2, channels, channels * 2, False, 1)
-            self.layer2 = create_blocks(2, channels, channels * 2, True, 3)
-            self.layer3 = create_blocks(2, channels, channels * 2, True, 3)
+            self.layer1 = create_blocks(0, channels, channels * 2, False, 1)
+            self.layer2 = create_blocks(1, channels, channels * 2, True, 3)
+            self.layer3 = create_blocks(0, channels, channels * 2, True, 3)
+            self.layer4 = create_blocks(1, channels, channels * 2, True, 3)
 
             self.output = chainer.links.Linear(None, class_labels, True, w)
             self.output_w = chainer.Parameter(chainer.initializers.Constant(0), (1, 1))
@@ -82,13 +83,17 @@ class ResNet(chainer.Chain):
 
         h = self.layer1(h)
 
-        h = z2c(h, 2)
+        h = c2z(h, 2)
 
         h = self.layer2(h)
 
-        h = z2c(h, 2)
+        h = c2z(h, 2)
 
         h = self.layer3(h)
+
+        h = c2z(h, 2)
+
+        h = self.layer4(h)
 
         h = chainer.functions.max_pooling_nd(h, (1,) + h.shape[3:])
         h = self.output(h)
